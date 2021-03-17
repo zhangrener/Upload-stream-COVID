@@ -1,18 +1,20 @@
 args = commandArgs(trailingOnly=TRUE)
   
-  if (length(args) == 2){
+  if (length(args) == 3){
     in_file_swab = args[1]
-    out_csv = args[2]
+    route = args[2]
+    out_csv = args[3]
     
     message("[Input] rtPCR file is ", in_file_swab)
+    message("input/output route is ", route)
     message("[Output] Output file is ", out_csv)
     
   } else {
-    stop("Please provide  (1) rtPCR file (2) Output Excel file name")
+    stop("Please provide  (1) rtPCR file with extension (2) input/output route using \ (3) Output csv file name with extension")
   }
 #########################################################################
 suppressMessages(library(readr))
-setwd("/Users/win/Desktop/wd")
+setwd(route)
 s <- read_delim(in_file_swab, "\t", escape_double = FALSE, na= "empty", trim_ws = TRUE)
 dat<-data.frame(matrix(NA, nrow = nrow(s)))
 dat$`Facility Name`<-"Apostle Diagnostic"
@@ -52,6 +54,9 @@ dat$`Patient City`<-s$City
 dat$`Patient State`<-s$State
 dat$`Patient Zip`<-substring(s$`Zip Code`,1,5)
 ### zipcode to county
+if (file.exists("uszips.csv")==FALSE){
+  download.file("https://raw.githubusercontent.com/zhangrener/Upload-stream-COVID/main/uszips.csv","uszips.csv")
+}
 ZipCodes<-read_csv("uszips.csv")
 ###
 dat$`Patient County`<-ZipCodes[match(substring(s$`Zip Code`,1,5),ZipCodes$zip),]$county_name
@@ -93,4 +98,4 @@ dat$`Device Identifier`<-"QuantStudio 5 Real-Time PCR System"
 dat$`Notes`<- " "
 dat[,1]<-NULL
 dat[is.na(dat)] <- " "
-write.csv(dat,paste(out_csv,".csv",sep=""), row.names = FALSE)
+write.csv(dat,out_csv, row.names = FALSE)
