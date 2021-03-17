@@ -10,7 +10,7 @@ args = commandArgs(trailingOnly=TRUE)
     message("[Output] Output file is ", out_csv)
     
   } else {
-    stop("Please provide  (1) rtPCR file with extension (2) input/output route using \ (3) Output csv file name with extension")
+    stop("Please provide  (1) rtPCR file with extension (2) input/output route (3) Output csv file name with extension")
   }
 #########################################################################
 suppressMessages(library(readr))
